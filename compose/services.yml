@@ -1,11 +1,15 @@
 version: "2.0"
 
+volumes:
+    cert-volume:
+        external: true
+
 services:
   ui:
     extends:
       file: ./common.yml
       service: component
-    image: harmonidcaputo/open-balena-ui:${OPENBALENA_UI_VERSION_TAG}
+    image: dcnext/open-balena-ui:${OPENBALENA_UI_VERSION_TAG}
     depends_on:
       - postgrest
       - remote
@@ -15,15 +19,16 @@ services:
       OPEN_BALENA_S3_URL: https://s3.${OPENBALENA_HOST_NAME}
       OPEN_BALENA_S3_ACCESS_KEY: ${OPENBALENA_S3_ACCESS_KEY}
       OPEN_BALENA_S3_SECRET_KEY: ${OPENBALENA_S3_SECRET_KEY}
-      REACT_APP_OPEN_BALENA_UI_URL: http://admin.${OPENBALENA_HOST_NAME}:8080
-      REACT_APP_OPEN_BALENA_POSTGREST_URL: http://postgrest.${OPENBALENA_HOST_NAME}:8000
-      REACT_APP_OPEN_BALENA_REMOTE_URL: http://remote.${OPENBALENA_HOST_NAME}:10000
+      REACT_APP_OPEN_BALENA_UI_URL: https://admin.${OPENBALENA_HOST_NAME}:8080
+      REACT_APP_OPEN_BALENA_POSTGREST_URL: https://postgrest.${OPENBALENA_HOST_NAME}:8000
+      REACT_APP_OPEN_BALENA_REMOTE_URL: https://remote.${OPENBALENA_HOST_NAME}:10000
       REACT_APP_OPEN_BALENA_API_URL: https://api.${OPENBALENA_HOST_NAME}
       REACT_APP_OPEN_BALENA_API_VERSION: ${OPENBALENA_API_VERSION_TAG}
+      REACT_APP_BANNER_IMAGE: ./banner_illustration.svg
     ports:
       - "8080:8080"
     networks:
-      openbalena_default:
+      open-balena_default:
         aliases:
           - admin.${OPENBALENA_HOST_NAME}
 
@@ -31,7 +36,7 @@ services:
     extends:
       file: ./common.yml
       service: component
-    image: harmonidcaputo/open-balena-remote:${OPENBALENA_REMOTE_VERSION_TAG}
+    image: dcnext/open-balena-remote:${OPENBALENA_REMOTE_VERSION_TAG}
     environment:
       BALENARC_BALENA_URL: ${OPENBALENA_HOST_NAME}
       HOST_MODE: ${OPENBALENA_ADMIN_HOST_MODE}
@@ -47,25 +52,29 @@ services:
       - "10008:10008"
       - "10009:10009"
     networks:
-      openbalena_default:
+      open-balena_default:
         aliases:
           - remote.${OPENBALENA_HOST_NAME}
+    volumes:
+       - cert-volume:/certs/
 
   postgrest:
     extends:
       file: ./common.yml
       service: component
-    image: harmonidcaputo/open-balena-postgrest:${OPENBALENA_POSTGREST_VERSION_TAG}
+    image: dcnext/open-balena-postgrest:${OPENBALENA_POSTGREST_VERSION_TAG}
     environment:
-      PGRST_DB_URI: postgres://${OPENBALENA_DB_USERNAME}:${OPENBALENA_DB_PASSWORD}@db.${OPENBALENA_HOST_NAME}:${OPENBALENA_DB_PORT}/resin
+      PGRST_DB_URI: postgres://${OPENBALENA_DB_USERNAME}:${OPENBALENA_DB_PASSWORD}@open-balena-db-1:${OPENBALENA_DB_PORT}/resin
       PGRST_JWT_SECRET: ${OPENBALENA_JWT_SECRET}
     ports:
       - "8000:8000"
     networks:
-      openbalena_default:
+      open-balena_default:
         aliases:
           - postgrest.${OPENBALENA_HOST_NAME}
+    volumes:
+       - cert-volume:/certs/
 
 networks:
-  openbalena_default:
+  open-balena_default:
     external: true
