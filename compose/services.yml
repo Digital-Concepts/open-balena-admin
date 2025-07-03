@@ -31,6 +31,8 @@ services:
       open-balena_default:
         aliases:
           - admin.${OPENBALENA_HOST_NAME}
+    volumes:
+        - /home/balena/keys/:/certs/
 
   remote:
     extends:
