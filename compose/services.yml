@@ -14,6 +14,8 @@ services:
       - postgrest
       - remote
     environment:
+      BALENARC_BALENA_URL: ${OPENBALENA_HOST_NAME}
+      HOST_MODE: ${OPENBALENA_ADMIN_HOST_MODE}
       PORT: 8080
       OPEN_BALENA_JWT_SECRET: ${OPENBALENA_JWT_SECRET}
       OPEN_BALENA_S3_URL: https://s3.${OPENBALENA_HOST_NAME}
