@@ -27,14 +27,19 @@ services:
       REACT_APP_OPEN_BALENA_API_URL: https://api.${OPENBALENA_HOST_NAME}
       REACT_APP_OPEN_BALENA_API_VERSION: ${OPENBALENA_API_VERSION_TAG}
       REACT_APP_BANNER_IMAGE: ./banner_illustration.svg
+      NODE_ENV: development
+      MIDDLEMAN_URL: http://middleman-ionos-middleman-ionos-1:5000
+      MIDDLEMAN_TOKEN: ${MIDDLEMAN_TOKEN}
     ports:
       - "8080:8080"
     networks:
       open-balena_default:
         aliases:
           - admin.${OPENBALENA_HOST_NAME}
+      webui:
     volumes:
         - /home/balena/keys/:/certs/
+    restart: always
 
   remote:
     extends:
@@ -61,6 +66,7 @@ services:
           - remote.${OPENBALENA_HOST_NAME}
     volumes:
        - cert-volume:/certs/
+    restart: always
 
   postgrest:
     extends:
@@ -78,7 +84,10 @@ services:
           - postgrest.${OPENBALENA_HOST_NAME}
     volumes:
        - cert-volume:/certs/
+    restart: always
 
 networks:
   open-balena_default:
+    external: true
+  webui:
     external: true
