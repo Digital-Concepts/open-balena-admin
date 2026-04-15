@@ -27,3 +27,7 @@ source "${VERSIONS_FILE}"; docker-compose \
   -f "${BASE_DIR}/compose/services.yml" \
   -f "${CONFIG_DIR}/docker-compose.yml" \
   "$@"
+
+
+cat  $BASE_DIR/scripts/mechanicus.txt 
+printf "\\033[1m%s\\033[0m\\n" "Cogitators and Data Interogators awakon"
