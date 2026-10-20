@@ -3,6 +3,7 @@ version: "2.0"
 volumes:
     cert-volume:
         external: true
+    admin-ui-data: {}
 
 services:
   ui:
@@ -30,6 +31,10 @@ services:
       NODE_ENV: development
       MIDDLEMAN_URL: http://middleman-ionos-middleman-ionos-1:5000
       MIDDLEMAN_TOKEN: ${MIDDLEMAN_TOKEN}
+      OPEN_BALENA_API_URL: https://api.${OPENBALENA_HOST_NAME}
+      OPEN_BALENA_SERVICE_API_KEY: ${OPENBALENA_ADMIN_UI_SERVICE_KEY}
+      ADMIN_UI_DB_PATH: /data/admin-ui.db
+      ADMIN_UI_BOOTSTRAP_ADMINS: ${OPENBALENA_ADMIN_UI_BOOTSTRAP_ADMINS}
     ports:
       - "8080:8080"
     networks:
@@ -39,6 +44,7 @@ services:
       webui:
     volumes:
         - /home/balena/keys/:/certs/
+        - admin-ui-data:/data
     restart: always
 
   remote:
@@ -76,6 +82,7 @@ services:
     environment:
       PGRST_DB_URI: postgres://${OPENBALENA_DB_USERNAME}:${OPENBALENA_DB_PASSWORD}@open-balena-db-1:${OPENBALENA_DB_PORT}/resin
       PGRST_JWT_SECRET: ${OPENBALENA_JWT_SECRET}
+      ADMIN_UI_URL: http://admin.${OPENBALENA_HOST_NAME}:8080
     ports:
       - "8000:8000"
     networks:
